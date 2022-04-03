@@ -1,0 +1,59 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: LendingPool
+    network: mainnet
+    source:
+      address: "0xC6845a5C768BF8D7681249f8927877Efda425baf"
+      abi: LendingPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Borrow
+        - Deposit
+        - FlashLoan
+        - LiquidationCall
+        - Paused
+        - RebalanceStableBorrowRate
+        - Repay
+        - ReserveDataUpdated
+        - ReserveUsedAsCollateralDisabled
+        - ReserveUsedAsCollateralEnabled
+        - Swap
+        - Unpaused
+        - Withdraw
+      abis:
+        - name: LendingPool
+          file: ./abis/LendingPool.json
+      eventHandlers:
+        - event: Borrow(indexed address,address,indexed address,uint256,uint256,uint256,indexed uint16)
+          handler: handleBorrow
+        - event: Deposit(indexed address,address,indexed address,uint256,indexed uint16)
+          handler: handleDeposit
+        - event: FlashLoan(indexed address,indexed address,indexed address,uint256,uint256,uint16)
+          handler: handleFlashLoan
+        - event: LiquidationCall(indexed address,indexed address,indexed address,uint256,uint256,address,bool)
+          handler: handleLiquidationCall
+        - event: Paused()
+          handler: handlePaused
+        - event: RebalanceStableBorrowRate(indexed address,indexed address)
+          handler: handleRebalanceStableBorrowRate
+        - event: Repay(indexed address,indexed address,indexed address,uint256)
+          handler: handleRepay
+        - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleReserveDataUpdated
+        - event: ReserveUsedAsCollateralDisabled(indexed address,indexed address)
+          handler: handleReserveUsedAsCollateralDisabled
+        - event: ReserveUsedAsCollateralEnabled(indexed address,indexed address)
+          handler: handleReserveUsedAsCollateralEnabled
+        - event: Swap(indexed address,indexed address,uint256)
+          handler: handleSwap
+        - event: Unpaused()
+          handler: handleUnpaused
+        - event: Withdraw(indexed address,indexed address,indexed address,uint256)
+          handler: handleWithdraw
+      file: ./src/mapping.ts
