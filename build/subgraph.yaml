@@ -1,0 +1,31 @@
+specVersion: 0.0.2
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: LendingPool
+    network: mainnet
+    source:
+      address: "0xC6845a5C768BF8D7681249f8927877Efda425baf"
+      abi: LendingPool
+      startBlock: 14511000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Borrow
+        - Deposit
+        - Repay
+      abis:
+        - name: LendingPool
+          file: LendingPool/abis/LendingPool.json
+      eventHandlers:
+        - event: Borrow(indexed address,address,indexed address,uint256,uint256,uint256,indexed
+            uint16)
+          handler: handleBorrow
+        - event: Deposit(indexed address,address,indexed address,uint256,indexed uint16)
+          handler: handleDeposit
+        - event: Repay(indexed address,indexed address,indexed address,uint256)
+          handler: handleRepay
+      file: LendingPool/LendingPool.wasm
