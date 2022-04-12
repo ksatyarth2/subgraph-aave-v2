@@ -1,6 +1,45 @@
-type Deposit @entity {
+interface UserTransaction {
   id: ID!
-  # count: BigInt!
+  pool: Pool!
+  user: User!
+  timestamp: Int!
+}
+type ContractToPoolMapping @entity {
+  # contract address
+  id: ID!
+  pool: Pool!
+}
+
+type Deposit implements UserTransaction @entity {
+  id: ID!
+  pool: Pool!
+  user: User!
+  amount: BigInt!
+  timestamp: Int!
+  caller: User!
   # reserve: Bytes! # address
   # user: Bytes! # address
+}
+
+type UserReserve @entity {
+  """
+  user address + reserve address
+  """
+  id: ID!
+  pool: Pool!
+  # reserve: Reserve!
+  user: User!
+}
+
+
+type User @entity{
+
+  id: ID!
+
+}
+
+type Pool @entity {
+  id: ID!
+  active: Boolean!
+  paused: Boolean!
 }

@@ -15,6 +15,9 @@ import {
   Unpaused,
   Withdraw
 } from "../generated/LendingPool/LendingPool"
+
+import { getHistoryEntityId } from './utils/id-generations';
+import { getOrInitUser, getOrInitUserReserve } from "./helpers/initializers";
 import { Deposit as DepositAction } from "../generated/schema"
 
 // export function handleBorrow(event: Borrow): void {
@@ -74,11 +77,22 @@ import { Deposit as DepositAction } from "../generated/schema"
 // }
 
 export function handleDeposit(event: Deposit): void {
- let id = event.transaction.hash.toHexString()
- let deposit = DepositAction.load(id)
- if (deposit == null){
-   deposit = new DepositAction(id)
- }
+ //let id = event.transaction.hash.toHexString()
+ let caller = event.params.user;
+  let user = event.params.onBehalfOf;
+  let depositedAmount = event.params.amount;
+  // let poolReserve = getOrInitReserve(event.params.reserve, event);
+  let userReserve = getOrInitUserReserve(user, event.params.reserve, event);
+//  let deposit = DepositAction.load(id)
+//  if (deposit == null){
+//    deposit = new DepositAction(id)
+//  }
+ let deposit = new DepositAction(getHistoryEntityId(event));
+  // deposit.pool = poolReserve.pool;
+  deposit.user = userReserve.user;
+  deposit.caller = getOrInitUser(caller).id;
+  deposit.amount = depositedAmount;
+  deposit.timestamp = event.block.timestamp.toI32();
 deposit.save()
 }
 

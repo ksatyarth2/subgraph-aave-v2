@@ -6,7 +6,7 @@ dataSources:
     name: LendingPool
     network: mainnet
     source:
-      address: "0xC6845a5C768BF8D7681249f8927877Efda425baf"
+      address: "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9"
       abi: LendingPool
       startBlock: 14511000
     mapping:
@@ -32,8 +32,8 @@ dataSources:
         - name: LendingPool
           file: ./abis/LendingPool.json
       eventHandlers:
-        - event: Borrow(indexed address,address,indexed address,uint256,uint256,uint256,indexed uint16)
-          handler: handleBorrow
+        # - event: Borrow(indexed address,address,indexed address,uint256,uint256,uint256,indexed uint16)
+        #   handler: handleBorrow
         - event: Deposit(indexed address,address,indexed address,uint256,indexed uint16)
           handler: handleDeposit
         # - event: FlashLoan(indexed address,indexed address,indexed address,uint256,uint256,uint16)
@@ -44,8 +44,8 @@ dataSources:
         #   handler: handlePaused
         # - event: RebalanceStableBorrowRate(indexed address,indexed address)
           # handler: handleRebalanceStableBorrowRate
-        - event: Repay(indexed address,indexed address,indexed address,uint256)
-          handler: handleRepay
+        # - event: Repay(indexed address,indexed address,indexed address,uint256)
+        #   handler: handleRepay
         # - event: ReserveDataUpdated(indexed address,uint256,uint256,uint256,uint256,uint256)
         #   handler: handleReserveDataUpdated
         # - event: ReserveUsedAsCollateralDisabled(indexed address,indexed address)
