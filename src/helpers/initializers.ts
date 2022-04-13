@@ -1,11 +1,12 @@
-import { Bytes, ethereum, log } from '@graphprotocol/graph-ts';
+import { Address, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import {
     User, 
-    UserReserve,
+  UserReserve,
+    Reserve,
     ContractToPoolMapping
 } from '../../generated/schema';
 
-import { getUserReserveId } from '../utils/id-generations';
+import { getReserveId, getUserReserveId } from '../utils/id-generations';
 export function getOrInitUser(address: Bytes): User {
     let user = User.load(address.toHexString());
     if (!user) {
@@ -46,10 +47,13 @@ export function getOrInitUser(address: Bytes): User {
 //   }
 
 export function getPoolByContract(event: ethereum.Event): string {
-    let contractAddress = event.address.toHexString();
+  let contractAddress = event.address.toHexString();
     let contractToPoolMapping = ContractToPoolMapping.load(contractAddress);
     if (contractToPoolMapping === null) {
-      throw new Error(contractAddress + 'is not registered in ContractToPoolMapping');
+      // throw new Error(contractAddress + 'is not registered in ContractToPoolMapping');
+      contractToPoolMapping = new ContractToPoolMapping(contractAddress);
+      contractToPoolMapping.pool = '0';
+      contractToPoolMapping.save();
     }
     return contractToPoolMapping.pool;
   }
@@ -61,6 +65,20 @@ export function getOrInitUserReserve(
     event: ethereum.Event
   ): UserReserve {
     let poolId = getPoolByContract(event);
-    //let reserve = getOrInitReserve(_underlyingAsset, event);
+    // let reserve = getOrInitReserve(_underlyingAsset, event);
     return initUserReserve(_underlyingAsset, _user, poolId);
+}
+  
+export function getOrInitReserve(underlyingAsset: Address, event: ethereum.Event): Reserve {
+  let poolId = getPoolByContract(event);
+  let reserveId = getReserveId(underlyingAsset, poolId);
+  let reserve = Reserve.load(reserveId);
+  if (reserve === null) {
+    reserve = new Reserve(reserveId);
+    reserve.underlyingAsset = underlyingAsset;
+    reserve.pool = poolId;
+    reserve.symbol = '';
+    reserve.name = '';
   }
+  return reserve as Reserve;
+}

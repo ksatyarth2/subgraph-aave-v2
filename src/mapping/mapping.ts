@@ -14,11 +14,11 @@ import {
   Swap,
   Unpaused,
   Withdraw
-} from "../generated/LendingPool/LendingPool"
+} from "../../generated/LendingPool/LendingPool"
 
-import { getHistoryEntityId } from './utils/id-generations';
-import { getOrInitUser, getOrInitUserReserve } from "./helpers/initializers";
-import { Deposit as DepositAction } from "../generated/schema"
+import { EventTypeRef, getHistoryEntityId, getHistoryId } from '../utils/id-generations';
+import { getOrInitReserve, getOrInitUser, getOrInitUserReserve } from "../helpers/initializers";
+import { Deposit as DepositAction } from "../../generated/schema"
 
 // export function handleBorrow(event: Borrow): void {
 //   // Entities can be loaded from the store using a string ID; this ID
@@ -76,25 +76,85 @@ import { Deposit as DepositAction } from "../generated/schema"
 //   // - contract.withdraw(...)
 // }
 
+/////////// abi of deposit event////
+// "inputs": [
+//   {
+//     "indexed": true,
+//     "internalType": "address",
+//     "name": "reserve",
+//     "type": "address"
+//   },
+//   {
+//     "indexed": false,
+//     "internalType": "address",
+//     "name": "user",
+//     "type": "address"
+//   },
+//   {
+//     "indexed": true,
+//     "internalType": "address",
+//     "name": "onBehalfOf",
+//     "type": "address"
+//   },
+//   {
+//     "indexed": false,
+//     "internalType": "uint256",
+//     "name": "amount",
+//     "type": "uint256"
+//   },
+//   {
+//     "indexed": true,
+//     "internalType": "uint16",
+//     "name": "referral",
+//     "type": "uint16"
+//   }
+// ],
+// "name": "Deposit",
+// "type": "event"
+// },
 export function handleDeposit(event: Deposit): void {
- //let id = event.transaction.hash.toHexString()
- let caller = event.params.user;
-  let user = event.params.onBehalfOf;
+  let poolReserve = getOrInitReserve(event.params.reserve, event);
+  let userReserve = getOrInitUserReserve(event.params.user, event.params.reserve, event);
   let depositedAmount = event.params.amount;
-  // let poolReserve = getOrInitReserve(event.params.reserve, event);
-  let userReserve = getOrInitUserReserve(user, event.params.reserve, event);
-//  let deposit = DepositAction.load(id)
-//  if (deposit == null){
-//    deposit = new DepositAction(id)
-//  }
- let deposit = new DepositAction(getHistoryEntityId(event));
-  // deposit.pool = poolReserve.pool;
+
+  let id = getHistoryId(event, EventTypeRef.Deposit);
+  if (DepositAction.load(id)) {
+    id = id + '0';
+  }
+
+  let deposit = new DepositAction(id);
+  deposit.pool = poolReserve.pool;
   deposit.user = userReserve.user;
-  deposit.caller = getOrInitUser(caller).id;
+  // deposit.onBehalfOf = event.params.onBehalfOf.toHexString();
+  // deposit.userReserve = userReserve.id;
+  // deposit.reserve = poolReserve.id;
   deposit.amount = depositedAmount;
   deposit.timestamp = event.block.timestamp.toI32();
-deposit.save()
+  // if (event.params.referral) {
+  //   let referrer = getOrInitReferrer(event.params.referral);
+  //   deposit.referrer = referrer.id;
+  // }
+  deposit.save();
 }
+// export function handleDeposit(event: Deposit): void {
+//  let id = event.transaction.hash.toHexString()
+//  let caller = event.params.user;
+//   let user = event.params.onBehalfOf;
+//   let depositedAmount = event.params.amount;
+//   // let poolReserve = getOrInitReserve(event.params.reserve, event);
+//   let userReserve = getOrInitUserReserve(, event.params.reserve, event);
+// //  let deposit = DepositAction.load(id)
+// //  if (deposit == null){
+// //    deposit = new DepositAction(id)
+// //  }
+//  let deposit = new DepositAction(getHistoryEntityId(event));
+//   // deposit.pool = poolReserve.pool;
+//   deposit.user = userReserve.user;
+//   deposit.caller = getOrInitUser(caller).id;
+//   deposit.amount = depositedAmount;
+//   deposit.timestamp = event.block.timestamp.toI32();
+// deposit.save()
+// }
 
 // export function handleFlashLoan(event: FlashLoan): void {}
 

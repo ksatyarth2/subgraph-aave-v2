@@ -6,6 +6,7 @@
     "build": "graph build",
     
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ parul-2718/aave-new",
+    "deploy-sat": "yarn codegen && yarn build && graph deploy --node https://api.thegraph.com/deploy/ ksatyarth2/aave-v2",
     "create-local": "graph create --node http://localhost:8020/ parul-2718/HaloDAOSubgraph",
     "remove-local": "graph remove --node http://localhost:8020/ parul-2718/HaloDAOSubgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 parul-2718/HaloDAOSubgraph"

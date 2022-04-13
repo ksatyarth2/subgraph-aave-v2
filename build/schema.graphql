@@ -1,45 +1,55 @@
 interface UserTransaction {
-  id: ID!
-  pool: Pool!
-  user: User!
-  timestamp: Int!
+    id: ID!
+    pool: Pool!
+    user: User!
+    timestamp: Int!
 }
 type ContractToPoolMapping @entity {
-  # contract address
-  id: ID!
-  pool: Pool!
+    # contract address
+    id: ID!
+    pool: Pool!
 }
 
 type Deposit implements UserTransaction @entity {
-  id: ID!
-  pool: Pool!
-  user: User!
-  amount: BigInt!
-  timestamp: Int!
-  caller: User!
-  # reserve: Bytes! # address
-  # user: Bytes! # address
+    id: ID!
+    pool: Pool!
+    user: User!
+    # onBehalfOf: User!
+    # reserve: Reserve!
+    userReserve: UserReserve!
+    amount: BigInt!
+    # referrer: Referrer
+    timestamp: Int!
 }
 
 type UserReserve @entity {
-  """
-  user address + reserve address
-  """
-  id: ID!
-  pool: Pool!
-  # reserve: Reserve!
-  user: User!
+    """
+    user address + reserve address
+    """
+    id: ID!
+    pool: Pool!
+    reserve: Reserve!
+    user: User!
 }
 
-
-type User @entity{
-
-  id: ID!
-
+type User @entity {
+    id: ID!
 }
 
 type Pool @entity {
-  id: ID!
-  active: Boolean!
-  paused: Boolean!
+    id: ID!
+    # active: Boolean!
+    # paused: Boolean!
+}
+
+type Reserve @entity {
+    """
+    Reserve address
+    """
+    id: ID!
+    underlyingAsset: Bytes!
+    pool: Pool!
+    symbol: String!
+    name: String!
+    decimals: Int!
 }
