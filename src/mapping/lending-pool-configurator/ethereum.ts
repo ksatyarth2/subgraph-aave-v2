@@ -4,6 +4,7 @@ import { IERC20Detailed } from '../../../generated/templates/LendingPoolConfigur
 import { IERC20DetailedBytes } from '../../../generated/templates/LendingPoolConfigurator/IERC20DetailedBytes';
 
 import {
+    createMapContractToPool,
 //   createMapContractToPool,
   getOrInitReserve,
 } from '../../helpers/initializers';
@@ -33,5 +34,7 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
     reserve.symbol = ERC20ATokenContract.symbol().slice(1);
   
     reserve.decimals = ERC20ReserveContract.decimals();
+    createMapContractToPool(event.params.aToken, reserve.pool);
+
     reserve.save();
 }

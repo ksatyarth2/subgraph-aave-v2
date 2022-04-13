@@ -57,7 +57,19 @@ export function getPoolByContract(event: ethereum.Event): string {
     }
     return contractToPoolMapping.pool;
   }
-
+  export function createMapContractToPool(_contractAddress: Address, pool: string): void {
+    let contractAddress = _contractAddress.toHexString();
+    let contractToPoolMapping = ContractToPoolMapping.load(contractAddress);
+  
+    if (contractToPoolMapping) {
+      log.error('contract {} is already registered in the protocol', [contractAddress]);
+      throw new Error(contractAddress + 'is already registered in the protocol');
+    }
+    contractToPoolMapping = new ContractToPoolMapping(contractAddress);
+    contractToPoolMapping.pool = pool;
+    contractToPoolMapping.save();
+  }
+  
 
 export function getOrInitUserReserve(
     _user: Bytes,
